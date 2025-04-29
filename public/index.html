@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam Hour Booster - Панель</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* Modern Dark Theme (Default) */
+        :root {
+            --bg-color: #121212; /* Dark background */
+            --card-bg: rgba(30, 30, 30, 0.8); /* Semi-transparent dark card background */
+            --border-color: rgba(60, 60, 60, 0.5); /* Semi-transparent border */
+            --text-color: #e0e0e0; /* Light text */
+            --heading-color: #ffffff; /* White headings */
+            --primary-color-solid: #007bff; /* Solid Blue */
+            --success-color-solid: #28a745; /* Solid Green */
+            --danger-color-solid: #dc3545; /* Solid Red */
+            --warning-color-solid: #ffc107; /* Solid Yellow */
+            --secondary-color-solid: #6c757d; /* Solid Grey */
+            --info-color: #17a2b8; /* Teal */
+            --log-color: #FFFFFF; /* Green text for logs */
+            --log-bg: rgba(0, 0, 0, 0.6); /* Darker semi-transparent background for logs */
+
+            /* Gradients for Dark Mode */
+            --gradient-primary: linear-gradient(90deg, var(--primary-color-solid) 0%, var(--secondary-color-solid) 100%);
+            --gradient-success: linear-gradient(90deg, var(--success-color-solid) 0%, rgba(0,123,255,0.8) 100%);
+            --gradient-danger: linear-gradient(90deg, var(--danger-color-solid) 0%, rgba(108,117,125,0.8) 100%);
+            --gradient-secondary: linear-gradient(90deg, var(--secondary-color-solid) 0%, rgba(52,58,64,0.8) 100%);
+            --gradient-warning: linear-gradient(90deg, var(--warning-color-solid) 0%, rgba(255,193,7,0.7) 100%);
+
+
+            --font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --border-radius-small: 0.375rem; /* Smaller radius for elements */
+            --border-radius-medium: 0.75rem; /* Medium radius for cards */
+            --spacing: 1rem;
+            --spacing-half: 0.5rem;
+        }
+
+        /* Light Mode Overrides */
+        body.light-mode {
+            --bg-color: #f4f7f6; /* Light background */
+            --card-bg: rgba(255, 255, 255, 0.8); /* Semi-transparent light card background */
+            --border-color: rgba(220, 220, 220, 0.8); /* Lighter border */
+            --text-color: #333; /* Dark text */
+            --heading-color: #000; /* Black headings */
+            /* Use existing solid colors */
+            --log-color: #000; /* Black text for logs in light mode */
+            --log-bg: rgba(255, 255, 255, 0.9); /* Lighter semi-transparent background for logs */
+
+             /* Gradients for Light Mode */
+             --gradient-primary: linear-gradient(90deg, rgba(0,123,255,0.8) 0%, rgba(108,117,125,0.6) 100%); /* Lighter Primary */
+             --gradient-success: linear-gradient(90deg, rgba(40,167,69,0.8) 0%, rgba(0,123,255,0.5) 100%); /* Lighter Success */
+             --gradient-danger: linear-gradient(90deg, rgba(220,53,69,0.8) 0%, rgba(108,117,125,0.5) 100%); /* Lighter Danger */
+             --gradient-secondary: linear-gradient(90deg, rgba(108,117,125,0.5) 0%, rgba(52,58,64,0.3) 100%); /* Lighter Secondary */
+             --gradient-warning: linear-gradient(90deg, rgba(255,193,7,0.9) 0%, rgba(255,193,7,0.6) 100%); /* Lighter Warning */
+        }
+
+         /* General styles that use variables */
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: var(--spacing);
+            line-height: 1.6;
+            min-height: 100vh; /* Ensure body takes at least full viewport height */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing);
+        }
+
+        h1, h2, h3 {
+            color: var(--heading-color);
+            margin-bottom: var(--spacing);
+            font-weight: 600;
+            transition: color 0.3s ease; /* Smooth transition */
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-medium); /* More rounded corners */
+            margin-bottom: var(--spacing);
+            padding: var(--spacing);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2); /* More prominent shadow */
+            backdrop-filter: blur(5px); /* Frosted glass effect */
+            -webkit-backdrop-filter: blur(5px); /* Safari support */
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+        }
+         body.light-mode .card {
+              box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); /* Less prominent shadow in light mode */
+         }
+
+        .account-card {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-half);
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-half);
+        }
+
+        .account-info span {
+            display: block;
+            margin-bottom: 0.2em;
+        }
+
+        .account-info .username {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: var(--heading-color); /* Use heading color */
+            transition: color 0.3s ease; /* Smooth transition */
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 0.3em 0.6em;
+            border-radius: var(--border-radius-small);
+            font-size: 0.9em;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            /* Status colors are generally fixed regardless of theme */
+        }
+
+        .status.running {
+            background-color: var(--success-color-solid); /* Use solid color for status background */
+            color: white;
+            box-shadow: 0 2px 5px rgba(40, 167, 69, 0.3);
+        }
+
+        .status.stopped {
+             background-color: var(--danger-color-solid); /* Use solid color for status background */
+             color: white;
+             box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+        }
+
+        .account-games {
+            font-size: 0.9em;
+            color: var(--text-color); /* Use text color */
+            word-break: break-all;
+            padding-top: var(--spacing-half);
+            border-top: 1px solid rgba(255, 255, 255, 0.1); /* Subtle separator */
+            transition: color 0.3s ease, border-top-color 0.3s ease; /* Smooth transition */
+        }
+         body.light-mode .account-games {
+              border-top-color: rgba(0, 0, 0, 0.08); /* Lighter separator in light mode */
+         }
+
+        .account-games code {
+            background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent code background */
+            color: var(--info-color); /* Accent color for code */
+            padding: 0.15em 0.4em;
+            border-radius: var(--border-radius-small);
+            margin: 0 3px;
+            font-weight: normal;
+             transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+        }
+        body.light-mode .account-games code {
+            background-color: rgba(0, 0, 0, 0.08);
+            color: var(--info-color);
+        }
+
+
+        .account-actions {
+            display: flex;
+            gap: var(--spacing-half);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 0.6em 1.2em;
+            border: none;
+            border-radius: var(--border-radius-small);
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease, opacity 0.3s ease, transform 0.1s ease, color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for background */
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+            display: inline-flex; /* Allows icon and text to be side-by-side */
+            align-items: center; /* Vertically align icon and text */
+            justify-content: center; /* Center content */
+        }
+
+        /* Default margin for icons in buttons with text */
+        button i {
+             margin-right: 0.5em; /* Space between icon and text */
+        }
+
+        /* Ensure no margin on icon in theme toggle button */
+        #theme-toggle i {
+            margin-right: 0; /* Override any margin */
+        }
+
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px); /* Subtle hover effect */
+        }
+
+        /* Button styles using gradients (default for dark mode, overridden in light mode) */
+        .btn-start { background: var(--gradient-success); color: white; box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4); }
+        .btn-stop { background: var(--gradient-danger); color: white; box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4); }
+        /* Edit button might look better with solid warning color or a lighter gradient */
+        .btn-edit { background: var(--gradient-warning); color: var(--text-color); box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3); }
+        .btn-delete { background: var(--gradient-secondary); color: white; box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3); }
+        .btn-primary { background: var(--gradient-primary); color: white; box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4); }
+        .btn-secondary { background-color: var(--secondary-color-solid); color: white; } /* Secondary stays solid for contrast */
+
+
+        /* Hover effects - adjust as needed for gradients */
+         .btn-start:hover:not(:disabled) { background: linear-gradient(90deg, rgba(40,167,69,0.9) 0%, rgba(0,123,255,0.7) 100%); } /* Dark mode hover */
+         body.light-mode .btn-start:hover:not(:disabled) { background: linear-gradient(90deg, rgba(40,167,69,0.9) 0%, rgba(0,123,255,0.6) 100%); } /* Light mode hover */
+
+         .btn-stop:hover:not(:disabled) { background: linear-gradient(90deg, rgba(220,53,69,0.9) 0%, rgba(108,117,125,0.7) 100%); } /* Dark mode hover */
+         body.light-mode .btn-stop:hover:not(:disabled) { background: linear-gradient(90deg, rgba(220,53,69,0.9) 0%, rgba(108,117,125,0.6) 100%); } /* Light mode hover */
+
+         .btn-edit:hover:not(:disabled) { background: linear-gradient(90deg, rgba(255,193,7,1) 0%, rgba(255,193,7,0.8) 100%); color: var(--heading-color);} /* Hover for Edit */
+         body.light-mode .btn-edit:hover:not(:disabled) { background: linear-gradient(90deg, rgba(255,193,7,1) 0%, rgba(255,193,7,0.9) 100%); color: var(--heading-color);} /* Hover for Edit Light */
+
+
+         .btn-delete:hover:not(:disabled) { background: linear-gradient(90deg, rgba(108,117,125,0.9) 0%, rgba(52,58,64,0.7) 100%); } /* Dark mode hover */
+         body.light-mode .btn-delete:hover:not(:disabled) { background: linear-gradient(90deg, rgba(108,117,125,0.6) 0%, rgba(52,58,64,0.4) 100%); } /* Light mode hover */
+
+         .btn-primary:hover:not(:disabled) { background: linear-gradient(90deg, rgba(0,123,255,0.9) 0%, rgba(108,117,125,0.9) 100%); } /* Dark mode hover */
+         body.light-mode .btn-primary:hover:not(:disabled) { background: linear-gradient(90deg, rgba(0,123,255,0.9) 0%, rgba(108,117,125,0.7) 100%); } /* Light mode hover */
+
+        body.light-mode .btn-secondary:hover:not(:disabled) { background-color: #545b62; } /* Secondary hover stays solid */
+
+
+        #log-container {
+             margin-top: calc(var(--spacing) * 1.5);
+        }
+        #log {
+            white-space: pre-wrap;
+            word-break: break-all;
+            background: var(--log-bg); /* Use variable */
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-medium);
+            padding: var(--spacing);
+            margin-top: var(--spacing);
+            height: 400px;
+            overflow-y: auto; /* Use auto for scrollbar only when needed */
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            color: var(--log-color); /* Use variable */
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.1); /* Subtle inner shadow */
+             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+        }
+
+         body.light-mode #log {
+             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05); /* Less prominent inner shadow in light mode */
+         }
+
+
+        #log::-webkit-scrollbar {
+            width: 8px;
+        }
+        #log::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2); /* Darker track */
+            border-radius: 10px;
+        }
+         body.light-mode #log::-webkit-scrollbar-track {
+             background: rgba(0, 0, 0, 0.1); /* Lighter track */
+         }
+        #log::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3); /* Light thumb */
+            border-radius: 10px;
+        }
+         body.light-mode #log::-webkit-scrollbar-thumb {
+             background: rgba(0, 0, 0, 0.3); /* Dark thumb */
+         }
+         #log::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+         body.light-mode #log::-webkit-scrollbar-thumb:hover {
+             background: rgba(0, 0, 0, 0.5);
+         }
+
+
+        /* Styles for Modals */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7); /* Darker overlay (consistent) */
+            align-items: center;
+            justify-content: center;
+             padding: var(--spacing); /* Add padding for smaller screens */
+        }
+
+        .modal-content {
+            background-color: var(--card-bg); /* Same semi-transparent background as cards */
+            margin: auto;
+            padding: calc(var(--spacing) * 1.5);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-medium); /* Rounded corners */
+            width: 95%; /* Use more width on smaller screens */
+            max-width: 500px; /* Max width */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            position: relative;
+             backdrop-filter: blur(8px); /* More blur for modals */
+            -webkit-backdrop-filter: blur(8px);
+             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+        }
+         body.light-mode .modal-content {
+             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Less prominent shadow in light mode */
+         }
+
+        .modal-close {
+            color: #aaa;
+            position: absolute;
+            top: var(--spacing);
+            right: var(--spacing);
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .modal-close:hover,
+        .modal-close:focus {
+            color: var(--heading-color); /* Use heading color */
+            text-decoration: none;
+        }
+
+        .modal h3 {
+            margin-top: 0;
+            margin-bottom: var(--spacing);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle separator */
+            padding-bottom: var(--spacing-half);
+            color: var(--heading-color); /* Use heading color */
+             transition: color 0.3s ease, border-bottom-color 0.3s ease; /* Smooth transition */
+        }
+         body.light-mode .modal h3 {
+             border-bottom-color: rgba(0, 0, 0, 0.1); /* Lighter separator */
+         }
+
+
+        .form-group {
+            margin-bottom: var(--spacing);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: calc(var(--spacing) / 4);
+            font-weight: 600;
+            color: var(--text-color); /* Use text color */
+             transition: color 0.3s ease; /* Smooth transition */
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group textarea {
+            width: 100%;
+            padding: 0.7em; /* Slightly more padding */
+            border: 1px solid var(--border-color); /* Use variable */
+            border-radius: var(--border-radius-small);
+            box-sizing: border-box;
+            background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent dark input (consistent) */
+            color: var(--text-color); /* Use text color */
+             outline: none; /* Remove default outline */
+             transition: border-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease; /* Smooth transition */
+        }
+         body.light-mode .form-group input[type="text"],
+         body.light-mode .form-group input[type="password"],
+         body.light-mode .form-group textarea {
+             background-color: rgba(255, 255, 255, 0.6); /* Semi-transparent light input */
+             color: var(--text-color);
+         }
+
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="password"]:focus,
+        .form-group textarea:focus {
+             border-color: var(--primary-color-solid); /* Use solid primary color for focus border */
+             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Glow effect (consistent) */
+        }
+
+        .form-group textarea {
+             min-height: 100px; /* Increased height */
+             resize: vertical;
+        }
+
+        .form-group input[type="checkbox"] {
+            margin-right: 8px;
+            vertical-align: middle;
+            width: auto; /* Prevent width: 100% affecting checkboxes */
+        }
+
+         .form-group label input[type="checkbox"] {
+             display: inline-block; /* Align label and checkbox */
+             margin-bottom: 0;
+             vertical-align: middle;
+         }
+
+        .form-group small {
+            display: block;
+            margin-top: 0.4em;
+            color: var(--secondary-color-solid); /* Muted text for small notes (use solid) */
+            font-size: 0.85em;
+             transition: color 0.3s ease; /* Smooth transition */
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-half);
+            margin-top: var(--spacing);
+        }
+
+        /* Theme Toggle Button */
+        #theme-toggle {
+            position: fixed;
+            bottom: var(--spacing);
+            right: var(--spacing);
+            padding: 0.8em; /* Make it roundish */
+            border-radius: 50%; /* Make it round */
+            width: 45px; /* Fixed width */
+            height: 45px; /* Fixed height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            background-color: var(--secondary-color-solid); /* Default dark (use solid) */
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 1010; /* Above modals */
+             transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease; /* Added box-shadow transition */
+        }
+         #theme-toggle:hover {
+             background-color: #5a6268;
+             transform: scale(1.1);
+         }
+         body.light-mode #theme-toggle {
+             background-color: var(--primary-color-solid); /* Primary color in light mode (use solid) */
+             color: white;
+             box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+         }
+         body.light-mode #theme-toggle:hover {
+             background-color: #0056b3;
+         }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .account-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .account-actions {
+                 width: 100%; /* Buttons take full width */
+                 justify-content: flex-start;
+            }
+            button {
+                 flex-grow: 1; /* Buttons grow to fill space */
+                 text-align: center;
+                 justify-content: center; /* Center content including icon */
+            }
+            button i {
+                margin-right: 0.5em; /* Keep margin right for icon */
+            }
+            /* Override for theme toggle in responsive */
+            #theme-toggle i {
+                margin-right: 0;
+            }
+
+             .modal-content {
+                 padding: var(--spacing); /* Less padding on smaller screens */
+             }
+             #theme-toggle {
+                  bottom: var(--spacing-half);
+                  right: var(--spacing-half);
+                  width: 40px;
+                  height: 40px;
+                  font-size: 1em;
+             }
+        }
+
+         @media (max-width: 480px) {
+             button {
+                 font-size: 0.8em; /* Smaller font on very small screens */
+                 padding: 0.5em 0.8em;
+             }
+             h1 {
+                 font-size: 1.8em;
+             }
+         }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Steam Накрутка Часов - Панель</h1>
+
+    <div class="card">
+        <button id="addAccountBtn" class="btn-primary"><i class="fas fa-plus"></i> Добавить аккаунт</button>
+    </div>
+
+    <div id="accounts">
+        <p>Загрузка аккаунтов...</p>
+    </div>
+
+    <div id="log-container" class="card">
+         <h3>Live Логи:</h3>
+         <div id="log">Загрузка логов...</div>
+    </div>
+
+    <button id="theme-toggle" aria-label="Переключить тему">
+        <i class="fas fa-sun"></i> </button>
+
+</div>
+
+<div id="guardModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal('guardModal')">&times;</span>
+        <h3>Введите Steam Guard код</h3>
+        <p id="guardUsernameDisplay"></p>
+        <form id="guardForm" onsubmit="submitGuard(event)">
+            <div class="form-group">
+                <label for="guardCode">Код:</label>
+                <input type="text" id="guardCode" required autocomplete="off" />
+            </div>
+            <div class="form-actions">
+                 <button type="button" class="btn-secondary" onclick="closeModal('guardModal')">Отмена</button>
+                 <button type="submit" class="btn-primary">Отправить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="accountModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal('accountModal')">&times;</span>
+        <h3 id="accountModalTitle">Добавить Аккаунт</h3>
+        <form id="accountForm" onsubmit="submitAccountForm(event)">
+             <input type="hidden" id="editUsername">
+             <div class="form-group">
+                 <label for="username">Имя пользователя (логин):</label>
+                 <input type="text" id="username" required autocomplete="username">
+             </div>
+             <div class="form-group">
+                 <label for="password">Пароль:</label>
+                 <input type="password" id="password" required autocomplete="new-password">
+             </div>
+             <div class="form-group">
+                 <label for="sharedSecret">Shared Secret (2FA, оставьте пустым для кода из почты/приложения):</label>
+                 <input type="text" id="sharedSecret" autocomplete="off">
+             </div>
+              <div class="form-group">
+                 <label for="games">ID Игр (через запятую):</label>
+                 <input type="text" id="games" placeholder="730, 440, 252490" autocomplete="off">
+                 <small>Пример: 730, 440, 252490</small>
+             </div>
+             <div class="form-group">
+                 <label for="replyMessage">Автоответчик сообщений (оставьте пустым для отключения):</label>
+                 <textarea id="replyMessage" autocomplete="off"></textarea>
+             </div>
+             <div class="form-group">
+                 <label>
+                     <input type="checkbox" id="enableStatus"> Быть видимым (Online)? (иначе Invisible)
+                 </label>
+             </div>
+             <div class="form-group">
+                 <label>
+                     <input type="checkbox" id="receiveMessages"> Логировать входящие сообщения?
+                 </label>
+             </div>
+             <div class="form-group">
+                 <label>
+                     <input type="checkbox" id="saveMessages"> Сохранять входящие сообщения в файл?
+                 </label>
+             </div>
+
+            <div class="form-actions">
+                 <button type="button" class="btn-secondary" onclick="closeModal('accountModal')">Отмена</button>
+                 <button type="submit" class="btn-primary" id="accountSubmitBtn">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const accountsDiv = document.getElementById('accounts');
+    const logDiv = document.getElementById('log');
+    const guardModal = document.getElementById('guardModal');
+    const guardUsernameDisplay = document.getElementById('guardUsernameDisplay');
+    const accountModal = document.getElementById('accountModal');
+    const accountModalTitle = document.getElementById('accountModalTitle');
+    const accountForm = document.getElementById('accountForm');
+    const addAccountBtn = document.getElementById('addAccountBtn');
+    const editUsernameInput = document.getElementById('editUsername'); // Скрытое поле
+    const themeToggle = document.getElementById('theme-toggle'); // Кнопка переключения темы
+    const body = document.body; // Ссылка на тег body
+
+    let currentGuardUsername = null;
+    let accountsCache = []; // Кэш для данных аккаунтов
+
+    // --- Theme Switching Logic ---
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        body.classList.add('light-mode');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>'; // Moon icon for Dark mode
+        themeToggle.setAttribute('aria-label', 'Переключить на темную тему');
+    } else {
+        // Default is dark mode, ensure no light-mode class is present
+         body.classList.remove('light-mode');
+         themeToggle.innerHTML = '<i class="fas fa-sun"></i>'; // Sun icon for Light mode
+         themeToggle.setAttribute('aria-label', 'Переключить на светлую тему');
+    }
+
+    themeToggle.addEventListener('click', () => {
+        if (body.classList.contains('light-mode')) {
+            // Switch to dark mode
+            body.classList.remove('light-mode');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>'; // Sun icon for Light mode
+            themeToggle.setAttribute('aria-label', 'Переключить на светлую тему');
+        } else {
+            // Switch to light mode
+            body.classList.add('light-mode');
+            localStorage.setItem('theme', 'light');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>'; // Moon icon for Dark mode
+            themeToggle.setAttribute('aria-label', 'Переключить на темную тему');
+        }
+    });
+
+    // --- WebSocket обработчики ---
+    socket.on('connect', () => {
+        console.log('Socket connected');
+        // При переподключении обновляем все
+        loadAccounts();
+        loadLogs();
+    });
+
+    socket.on('log', msg => {
+        logDiv.textContent += msg;
+        // Автопрокрутка только если пользователь не прокрутил вверх
+        if (logDiv.scrollHeight - logDiv.scrollTop <= logDiv.clientHeight + 50) {
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+    });
+
+    socket.on('steamGuardRequest', data => {
+        currentGuardUsername = data.username;
+        guardUsernameDisplay.textContent = `Аккаунт: ${data.username}`;
+        openModal('guardModal');
+    });
+
+    socket.on('statusUpdate', loadAccounts); // Обновляем список при изменении статуса/конфига
+
+    // --- Функции API ---
+    async function apiRequest(url, method = 'GET', body = null) {
+        try {
+            const options = {
+                method,
+                headers: {}
+            };
+            if (body) {
+                options.headers['Content-Type'] = 'application/json';
+                options.body = JSON.stringify(body);
+            }
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: response.statusText }));
+                throw new Error(errorData.message || `HTTP error ${response.status}`);
+            }
+            // Если ответ пустой (204 No Content) или не JSON
+            if (response.status === 204 || response.headers.get('content-length') === '0') {
+                 return null; // или return {};
+            }
+            const contentType = response.headers.get("content-type");
+             if (contentType && contentType.indexOf("application/json") !== -1) {
+                return await response.json();
+            } else {
+                return await response.text();
+             }
+
+        } catch (error) {
+            console.error(`API request failed: ${method} ${url}`, error);
+            alert(`Ошибка API: ${error.message}`); // Показываем ошибку пользователю
+            throw error; // Пробрасываем ошибку дальше, если нужно
+        }
+    }
+
+    // --- Функции управления аккаунтами ---
+    async function loadAccounts() {
+        try {
+            accountsCache = await apiRequest('/api/accounts');
+            renderAccounts(accountsCache);
+        } catch (error) {
+            accountsDiv.innerHTML = '<p style="color: var(--danger-color);">Не удалось загрузить аккаунты.</p>';
+        }
+    }
+
+    function renderAccounts(accounts) {
+        accountsDiv.innerHTML = ''; // Очищаем
+        if (!accounts || accounts.length === 0) {
+             accountsDiv.innerHTML = '<p style="color: var(--secondary-color);">Нет добавленных аккаунтов.</p>';
+             return;
+        }
+
+        accounts.forEach(acc => {
+            const statusClass = acc.running ? 'running' : 'stopped';
+            const statusText = acc.running ? '🟢 Работает' : '🔴 Остановлен';
+            // Преобразуем массив ID в строку, обрабатываем пустой массив
+            const gamesList = acc.gamesAndStatus && acc.gamesAndStatus.length > 0
+                ? acc.gamesAndStatus.map(id => `<code>${id}</code>`).join(', ')
+                : 'Нет игр';
+
+            const div = document.createElement('div');
+            div.className = 'card account-card';
+            div.innerHTML =
+                `<div class="account-header">
+                    <div class="account-info">
+                         <span class="username">${acc.username}</span>
+                         <span class="status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="account-actions">
+                        <button class="btn-start" onclick="start('${acc.username}')" ${acc.running ? 'disabled' : ''}><i class="fas fa-play"></i> Запустить</button>
+                        <button class="btn-stop" onclick="stop('${acc.username}')" ${!acc.running ? 'disabled' : ''}><i class="fas fa-stop"></i> Остановить</button>
+                        <button class="btn-edit" onclick="showEditModal('${acc.username}')"><i class="fas fa-pencil-alt"></i> Редактировать</button>
+                        <button class="btn-delete" onclick="deleteAccount('${acc.username}')"><i class="fas fa-trash-alt"></i> Удалить</button>
+                    </div>
+                </div>
+                <div class="account-games">
+                    Игры: ${gamesList}
+                </div>`;
+            accountsDiv.appendChild(div);
+        });
+    }
+
+    async function start(username) {
+        try {
+             await apiRequest('/api/start', 'POST', { username });
+             // loadAccounts() будет вызван через socket.io 'statusUpdate'
+        } catch (error) { /* Ошибка уже обработана в apiRequest */ }
+    }
+
+    async function stop(username) {
+         try {
+             await apiRequest('/api/stop', 'POST', { username });
+             // loadAccounts() будет вызван через socket.io 'statusUpdate'
+         } catch (error) { /* Ошибка уже обработана в apiRequest */ }
+    }
+
+     async function deleteAccount(username) {
+        if (confirm(`Вы уверены, что хотите удалить аккаунт ${username}? Это действие необратимо.`)) {
+            try {
+                await apiRequest(`/api/delete-account/${username}`, 'DELETE');
+                 // loadAccounts() будет вызван через socket.io 'statusUpdate'
+            } catch (error) { /* Ошибка уже обработана в apiRequest */ }
+        }
+    }
+
+
+    // --- Функции модальных окон ---
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+         // Очистка форм при закрытии
+         if (modalId === 'accountModal') {
+             accountForm.reset();
+             editUsernameInput.value = ''; // Очищаем скрытое поле
+             document.getElementById('username').disabled = false; // Разблокируем поле username
+             document.getElementById('password').required = true; // Пароль снова обязателен при добавлении
+         }
+         if (modalId === 'guardModal') {
+              document.getElementById('guardCode').value = '';
+         }
+    }
+
+    // Показывает модальное окно для добавления аккаунта
+    addAccountBtn.onclick = () => {
+        accountModalTitle.textContent = 'Добавить Аккаунт';
+        accountForm.reset(); // Очищаем форму
+        editUsernameInput.value = ''; // Убеждаемся, что скрытое поле пустое
+        document.getElementById('username').disabled = false; // Поле username доступно для ввода
+        document.getElementById('password').required = true; // Пароль обязателен при добавлении
+         // Устанавливаем значения по умолчанию для чекбоксов при добавлении
+        document.getElementById('enableStatus').checked = true;
+        document.getElementById('receiveMessages').checked = false;
+        document.getElementById('saveMessages').checked = false;
+        openModal('accountModal');
+    };
+
+    // Показывает модальное окно для редактирования аккаунта
+    function showEditModal(username) {
+        const account = accountsCache.find(acc => acc.username === username);
+        if (!account) {
+            alert('Не удалось найти данные аккаунта для редактирования.');
+            return;
+        }
+
+        accountModalTitle.textContent = `Редактировать Аккаунт: ${username}`;
+        editUsernameInput.value = username; // Запоминаем редактируемый username
+
+        // Заполняем форму данными из кэша
+        document.getElementById('username').value = account.username;
+        document.getElementById('username').disabled = true; // Запрещаем менять username
+        document.getElementById('password').value = ''; // Пароль не получаем с API, предлагаем ввести новый, если нужно
+        document.getElementById('password').required = false; // Пароль не обязателен при редактировании
+        document.getElementById('sharedSecret').value = account.sharedSecret || ''; // Заполняем, если есть
+        document.getElementById('games').value = account.gamesAndStatus ? account.gamesAndStatus.join(', ') : '';
+        document.getElementById('replyMessage').value = account.replyMessage || '';
+        document.getElementById('enableStatus').checked = account.enableStatus;
+        document.getElementById('receiveMessages').checked = account.receiveMessages;
+        document.getElementById('saveMessages').checked = account.saveMessages;
+
+
+        openModal('accountModal');
+    }
+
+     // Отправка формы добавления/редактирования
+    async function submitAccountForm(event) {
+        event.preventDefault();
+        const isEditing = !!editUsernameInput.value; // Проверяем, редактируем ли мы
+        const username = isEditing ? editUsernameInput.value : document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value; // Пароль берем всегда
+
+        // Валидация пароля при добавлении
+        if (!isEditing && !password) {
+             alert('Пароль обязателен при добавлении нового аккаунта.');
+             return;
+        }
+
+
+        const gamesValue = document.getElementById('games').value.trim();
+        const gamesArray = gamesValue ? gamesValue.split(',').map(id => parseInt(id.trim(), 10)).filter(Number.isFinite) : [];
+
+
+        const accountData = {
+            // username добавится ниже в зависимости от режима
+            password: password, // Отправляем пароль, даже если пустой при редактировании (сервер решит, обновлять ли)
+            sharedSecret: document.getElementById('sharedSecret').value.trim(),
+            gamesAndStatus: gamesArray,
+            enableStatus: document.getElementById('enableStatus').checked,
+            replyMessage: document.getElementById('replyMessage').value.trim(),
+            receiveMessages: document.getElementById('receiveMessages').checked,
+            saveMessages: document.getElementById('saveMessages').checked
+        };
+
+         // Удаляем поле password из данных, если оно пустое при редактировании
+         if (isEditing && !accountData.password) {
+             delete accountData.password;
+         }
+
+
+        try {
+            if (isEditing) {
+                 // Редактирование
+                 await apiRequest(`/api/edit-account/${username}`, 'PUT', accountData);
+            } else {
+                 // Добавление (добавляем username в данные)
+                 accountData.username = username;
+                 await apiRequest('/api/add-account', 'POST', accountData);
+            }
+             closeModal('accountModal');
+             // Список обновится через statusUpdate от сервера
+        } catch (error) {
+            // Ошибка уже показана в alert внутри apiRequest
+            console.error("Failed to save account:", error);
+        } finally {
+            // Восстанавливаем обязательность пароля для следующего открытия формы
+             document.getElementById('password').required = true;
+        }
+    }
+
+
+    // --- Steam Guard ---
+    async function submitGuard(event) {
+        event.preventDefault();
+        const code = document.getElementById('guardCode').value;
+        if (!currentGuardUsername || !code) return;
+
+        try {
+             await apiRequest('/api/submit-guard', 'POST', { username: currentGuardUsername, code });
+             closeModal('guardModal');
+             // Статус обновится через 'statusUpdate' если логин пройдет успешно
+        } catch (error) {
+             // Ошибка уже показана в alert
+             document.getElementById('guardCode').value = ''; // Очищаем поле при ошибке
+        }
+    }
+
+    // --- Загрузка логов ---
+    async function loadLogs() {
+        try {
+             const logs = await apiRequest('/api/logs');
+             logDiv.textContent = logs || 'Логи пусты.';
+             logDiv.scrollTop = logDiv.scrollHeight; // Прокрутить вниз
+        } catch (error) {
+             logDiv.textContent = 'Не удалось загрузить логи.';
+        }
+    }
+
+    // --- Инициализация при загрузке страницы ---
+    loadAccounts();
+    loadLogs();
+
+    // Периодическое обновление статусов (на всякий случай, если WebSocket отвалится)
+    // setInterval(loadAccounts, 15000); // каждые 15 секунд
+
+    // Закрытие модалок по клику вне контента (необязательно, но удобно)
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            closeModal(event.target.id);
+        }
+    }
+
+</script>
+
+</body>
+</html>
