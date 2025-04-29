@@ -30,8 +30,6 @@
     curl -fsSL [https://deb.nodesource.com/setup_22.x](https://deb.nodesource.com/setup_22.x) | sudo -E bash -
     sudo apt-get install -y nodejs
     ```
-    * `curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -` скачивает и запускает скрипт, который добавляет официальный репозиторий Node.js в вашу систему.
-    * `sudo apt-get install -y nodejs` устанавливает сам Node.js и npm (который поставляется вместе с Node.js).
 
 3.  **Клонируйте репозиторий (или скачайте файлы) и перейдите в папку проекта:**
     ```bash
@@ -48,7 +46,6 @@
     ```bash
     npm install
     ```
-    Эта команда прочитает файл `package.json` и установит все необходимые библиотеки (такие как `steam-user`, `express`, `socket.io` и `body-parser`).
 
 ## Настройка
 
