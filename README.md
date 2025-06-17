@@ -27,7 +27,7 @@
 
 2.  **Добавьте репозиторий NodeSource и установите Node.js (версия 22.x или выше):**
     ```bash
-    curl -fsSL [https://deb.nodesource.com/setup_22.x](https://deb.nodesource.com/setup_22.x) | sudo -E bash -
+    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
     sudo apt-get install -y nodejs
     ```
 
