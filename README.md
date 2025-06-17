@@ -35,7 +35,7 @@
     ```bash
     # Если используете Git:
     git clone https://github.com/Dornode/Steam-Hour-Booster.git
-    cd https://github.com/Dornode/Steam-Hour-Booster.git
+    cd Steam-Hour-Booster
     
     # Если скачали ZIP архив:
     # Распакуйте архив и перейдите в папку через терминал
